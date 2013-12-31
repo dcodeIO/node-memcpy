@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "author": "Daniel Wirtz <dcode@dcode.io>",
     "description": "Copies data between node Buffers and/or ArrayBuffers up to ~75 times faster than in pure JS.",
-    "main": "memcpy.js",
+    "main": "src/memcpy.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/dcodeIO/node-memcpy.git"
