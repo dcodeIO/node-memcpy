@@ -37,9 +37,9 @@ types can be ridiculously slow. This is where a node module like memcpy comes in
 Breakdown
 ---------
 * `Buffer` to `Buffer` is about as fast as using `Buffer#copy`
-* `Buffer` to `ArrayBuffer` is about **45 times / faster**
-* `ArrayBuffer` to `Buffer` is about **45 times / faster**
-* `ArrayBuffer` to `ArrayBuffer` is about **75 times / faster**
+* `Buffer` to `ArrayBuffer` is about **45 times faster**
+* `ArrayBuffer` to `Buffer` is about **45 times faster**
+* `ArrayBuffer` to `ArrayBuffer` is about **75 times faster**
 
 Please keep in mind that - besides the nice numbers - this is still to be considered experimental. I'd love if you'd
 review the C++ code to validate that it's safe.
