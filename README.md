@@ -1,5 +1,5 @@
-memcpy
-======
+node-memcpy
+===========
 Copies data between node Buffers and/or ArrayBuffers up to ~75 times faster than in pure JS.
 
 Wait, what?
@@ -40,6 +40,12 @@ Breakdown
 * `Buffer` to `ArrayBuffer` is about **45 times faster**
 * `ArrayBuffer` to `Buffer` is about **45 times faster**
 * `ArrayBuffer` to `ArrayBuffer` is about **75 times faster**
+
+Usage
+-----
+* `npm install memcpy`
+* `var memcpy = require("memcpy");`
+* `memcpy(target[, targetStart=0], source[, sourceStart=0[, sourceEnd=source.length])`
 
 Please keep in mind that - besides the nice numbers - this is still to be considered experimental. I'd love if you'd
 review the C++ code to validate that it's safe.
