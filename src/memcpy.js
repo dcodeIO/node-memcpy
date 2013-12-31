@@ -83,7 +83,7 @@
                 // Slower:
                 // for (i=sourceStart, j=targetStart; i<sourceEnd; ++i, ++j) target[j] = source[i];
 
-            // ArrayBuffer source -> Buffer target (the binding is about 47 times faster)
+            // ArrayBuffer source -> Buffer target (the binding is about 45 times faster)
             } else {
                 sourceEnd = sourceEnd || source.byteLength;
                 if (targetStart+sourceEnd-sourceStart > target.length) {
@@ -95,7 +95,7 @@
 
         } else {
 
-            // Buffer source -> ArrayBuffer target (the binding is about 47 times faster)
+            // Buffer source -> ArrayBuffer target (the binding is about 45 times faster)
             if (source instanceof Buffer) {
                 sourceEnd = sourceEnd || source.length;
                 if (targetStart+sourceEnd-sourceStart > target.byteLength) {

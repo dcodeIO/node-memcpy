@@ -48,6 +48,7 @@ Usage
 * `memcpy(target[, targetStart=0], source[, sourceStart=0[, sourceEnd=source.length])`
 
 Please keep in mind that - besides the nice numbers - this is still to be considered experimental. I'd love if you'd
-review the C++ code to validate that it's safe.
+review the C++ code to validate that it's safe. I can't yet think about a sane use case, though, as just sticking with
+Buffers on node.js and ArrayBuffers in the browser should be best practice.
 
 **License:** [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
