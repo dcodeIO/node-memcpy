@@ -9,29 +9,15 @@ While Buffers are nice because they are a lot faster than V8's ArrayBuffers, tra
 types can be ridiculously slow. This is where a node module like memcpy comes into play.
 
 ```
- |_ _ _|_
- |_(-_)|_                                                       test.js v1.0.0
-
- i memcpy.interop > cc Buffer -> Buffer
- i memcpy.interop > cc Buffer -> ArrayBuffer
- i memcpy.interop > cc ArrayBuffer -> Buffer
- i memcpy.interop > cc ArrayBuffer -> ArrayBuffer
- i memcpy.interop > js Buffer -> Buffer
- i memcpy.interop > js Buffer -> ArrayBuffer
- i memcpy.interop > js ArrayBuffer -> Buffer
- i memcpy.interop > js ArrayBuffer -> ArrayBuffer
- + memcpy.interop                                   5.430 ms     48 assertions
  i memcpy.100k > cc Buffer -> Buffer: 22.222ms
  i memcpy.100k > cc Buffer -> ArrayBuffer: 23.548ms
  i memcpy.100k > cc ArrayBuffer -> Buffer: 22.108ms
  i memcpy.100k > cc ArrayBuffer -> ArrayBuffer: 21.778ms
+
  i memcpy.100k > js Buffer -> Buffer: 23.163ms
  i memcpy.100k > js Buffer -> ArrayBuffer: 1043.713ms
  i memcpy.100k > js ArrayBuffer -> Buffer: 1003.351ms
  i memcpy.100k > js ArrayBuffer -> ArrayBuffer: 1607.978ms
- + memcpy.100k                                   3773.234 ms      0 assertions
-
- test OK 2 tests (3780.560 ms, 48 assertions)
 ```
 
 Breakdown
