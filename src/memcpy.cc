@@ -99,10 +99,10 @@ Handle<Value> memcpy(const Arguments& args) {
         return scope.Close(Undefined());
     }
 
-    // Do the thing
-    memcpy(
-        static_cast<byte*>(target->GetIndexedPropertiesExternalArrayData()) + targetStart,
-        static_cast<byte*>(source->GetIndexedPropertiesExternalArrayData()) + sourceStart,
+    // Do the thing (memmove to be compatible to native Buffer#copy)
+    memmove(
+        static_cast<unsigned char*>(target->GetIndexedPropertiesExternalArrayData()) + targetStart,
+        static_cast<unsigned char*>(source->GetIndexedPropertiesExternalArrayData()) + sourceStart,
         len
     );
 

@@ -50,6 +50,29 @@ module.exports = {
         test.done();
     },
 
+    "overlap": function(test) {
+        [memcpy.binding, memcpy.native].forEach(function(memcpy) {
+            [Buffer, ArrayBuffer].forEach(function(Type) {
+                var b = new Type(8);
+                test.log((memcpy === memcpy.binding ? "cc".cyan : "js".green)+" "+b.constructor.name);
+                fill(b);
+                test.strictEqual(hex(b), "0123456789ABCDEF");
+                memcpy(b, 1, b, 4, 7);
+                test.strictEqual(hex(b), "0189ABCD89ABCDEF");
+                fill(b);
+                memcpy(b, b);
+                test.strictEqual(hex(b), "0123456789ABCDEF");
+                fill(b);
+                memcpy(b, b, 4);
+                test.strictEqual(hex(b), "89ABCDEF89ABCDEF");
+                fill(b);
+                memcpy(b, 4, b, 0, 4);
+                test.strictEqual(hex(b), "0123456701234567");
+            });
+        });
+        test.done();
+    },
+
     "100k": function(test) {
         [memcpy.binding, memcpy.native].forEach(function(memcpy) {
             [Buffer, ArrayBuffer].forEach(function(Type1) {
