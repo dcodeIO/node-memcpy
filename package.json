@@ -1,6 +1,6 @@
 {
     "name": "memcpy",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "author": "Daniel Wirtz <dcode@dcode.io>",
     "description": "Copies data between node Buffers and/or ArrayBuffers up to ~75 times faster than in pure JS.",
     "main": "src/memcpy.js",

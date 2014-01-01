@@ -34,11 +34,11 @@ module.exports = {
                     fill(b1);
                     fill(b2);
                     test.strictEqual(hex(b1), hex(b2));
-                    memcpy(b2, 1, b1, 4, 7);
+                    test.strictEqual(memcpy(b2, 1, b1, 4, 7), 3);
                     test.strictEqual(hex(b2), "0189ABCD89ABCDEF");
-                    memcpy(b2, b1);
+                    test.strictEqual(memcpy(b2, b1), 8);
                     test.strictEqual(hex(b2), "0123456789ABCDEF");
-                    memcpy(b2, b1, 4);
+                    test.strictEqual(memcpy(b2, b1, 4), 4);
                     test.strictEqual(hex(b2), "89ABCDEF89ABCDEF");
                     test.throws(function() {
                         memcpy(b2, 1, b1);
@@ -57,16 +57,16 @@ module.exports = {
                 test.log((memcpy === memcpy.binding ? "cc".cyan : "js".green)+" "+b.constructor.name);
                 fill(b);
                 test.strictEqual(hex(b), "0123456789ABCDEF");
-                memcpy(b, 1, b, 4, 7);
+                test.strictEqual(memcpy(b, 1, b, 4, 7), 3);
                 test.strictEqual(hex(b), "0189ABCD89ABCDEF");
                 fill(b);
-                memcpy(b, b);
+                test.strictEqual(memcpy(b, b), 8);
                 test.strictEqual(hex(b), "0123456789ABCDEF");
                 fill(b);
-                memcpy(b, b, 4);
+                test.strictEqual(memcpy(b, b, 4), 4);
                 test.strictEqual(hex(b), "89ABCDEF89ABCDEF");
                 fill(b);
-                memcpy(b, 4, b, 0, 4);
+                test.strictEqual(memcpy(b, 4, b, 0, 4), 4);
                 test.strictEqual(hex(b), "0123456701234567");
             });
         });

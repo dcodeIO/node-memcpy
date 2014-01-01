@@ -18,7 +18,7 @@
 using namespace v8;
 
 // Copies data between kExternalUnsignedByteArrays like node Buffers and ArrayBuffers.
-// target[, targetStart], source[, sourceStart[, sourceEnd]]
+// memcpy(target[, targetStart], source[, sourceStart[, sourceEnd]]):bytesCopied
 Handle<Value> memcpy(const Arguments& args) {
     HandleScope scope;
 
@@ -110,7 +110,7 @@ Handle<Value> memcpy(const Arguments& args) {
         len
     );
 
-    return scope.Close(Undefined());
+    return scope.Close(Number::New(len));
 }
 
 void init(Handle<Object> exports) {

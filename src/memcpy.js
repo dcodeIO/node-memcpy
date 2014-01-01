@@ -51,6 +51,12 @@
     var l = null;
 
     /**
+     * @type {number}
+     * @inner
+     */
+    var len = 0;
+
+    /**
      * Copies data between Buffers and/or ArrayBuffers in a uniform way.
      * @exports memcpy
      * @function
@@ -60,6 +66,7 @@
      * @param {(!(Buffer|ArrayBuffer)|number)=} source Source
      * @param {number=} sourceStart Source start, defaults to 0.
      * @param {number=} sourceEnd Source end, defaults to capacity.
+     * @returns {number} Number of bytes copied
      * @throws {Error} If any index is out of bounds
      */
     function memcpy(target, targetStart, source, sourceStart, sourceEnd) {
@@ -75,7 +82,8 @@
             // Buffer source -> Buffer target (the binding is a tiny bit faster)
             if (source instanceof Buffer) {
                 sourceEnd = sourceEnd || source.length;
-                if (targetStart+sourceEnd-sourceStart > target.length) {
+                len = sourceEnd - sourceStart;
+                if (targetStart+len > target.length) {
                     throw(new Error("Buffer overrun"));
                 }
                 source.copy(target, targetStart, sourceStart, sourceEnd);
@@ -86,7 +94,8 @@
             // ArrayBuffer source -> Buffer target (the binding is about 45 times faster)
             } else {
                 sourceEnd = sourceEnd || source.byteLength;
-                if (targetStart+sourceEnd-sourceStart > target.length) {
+                len = sourceEnd - sourceStart;
+                if (targetStart+len > target.length) {
                     throw(new Error("Buffer overrun"));
                 }
                 for (i=sourceStart, j=targetStart, k=new Uint8Array(source); i<sourceEnd; ++i, ++j) target[j] = k[i];
@@ -98,7 +107,8 @@
             // Buffer source -> ArrayBuffer target (the binding is about 45 times faster)
             if (source instanceof Buffer) {
                 sourceEnd = sourceEnd || source.length;
-                if (targetStart+sourceEnd-sourceStart > target.byteLength) {
+                len = sourceEnd - sourceStart;
+                if (targetStart+len > target.byteLength) {
                     throw(new Error("Buffer overrun"));
                 }
                 for (i=sourceStart, j=targetStart, k=new Uint8Array(target); i<sourceEnd; ++i, ++j) k[j] = source[i];
@@ -107,7 +117,8 @@
             // ArrayBuffer source -> ArrayBuffer target (the binding is about 75 times faster)
             } else {
                 sourceEnd = sourceEnd || source.byteLength;
-                if (targetStart+sourceEnd-sourceStart > target.byteLength) {
+                len = sourceEnd-sourceStart;
+                if (targetStart+len > target.byteLength) {
                     throw(new Error("Buffer overrun"));
                 }
                 for (i=sourceStart, j=targetStart, k=new Uint8Array(target), l=new Uint8Array(source); i<sourceEnd; ++i, ++j) k[j] = l[i];
@@ -115,6 +126,7 @@
             }
 
         }
+        return len;
     }
 
     if (binding) {
