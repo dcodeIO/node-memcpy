@@ -31,14 +31,14 @@ API
 ---
 ##### memcpy(target[, targetStart=0], source[, sourceStart=0[, sourceEnd=source.length]):bytesCopied
 
-| Argument     | Type               | Optional  | Description
-|--------------|--------------------|-----------|------------------------------------
-| target       | Buffer|ArrayBuffer |           | Target buffer to copy to
-| targetStart  | number             | omittable | Target offset to begin copying to
-| source       | Buffer|ArrayBuffer |           | Source buffer to copy from
-| sourceStart  | number             | optional  | Source offset to begin copying from
-| sourceEnd    | number             | optional  | Source offset to end copying from
-| **@returns** | number             |           | Number of bytes copied
+| Argument     | Type                    | Optional  | Description
+|--------------|-------------------------|-----------|------------------------------------
+| target       | Buffer&#124;ArrayBuffer |           | Target buffer to copy to
+| targetStart  | number                  | omittable | Target offset to begin copying to
+| source       | Buffer&#124;ArrayBuffer |           | Source buffer to copy from
+| sourceStart  | number                  | optional  | Source offset to begin copying from
+| sourceEnd    | number                  | optional  | Source offset to end copying from
+| **@returns** | number                  |           | Number of bytes copied
 
 Usage
 -----
