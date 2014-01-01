@@ -98,6 +98,10 @@ Handle<Value> memcpy(const Arguments& args) {
         ThrowException(Exception::TypeError(String::New("Illegal source range: Target capacity overrun")));
         return scope.Close(Undefined());
     }
+    if (sizeof(unsigned char) != 1) {
+        ThrowException(Exception::TypeError(String::New("sizeof(unsigned char) != 1")));
+        return scope.Close(Undefined());
+    }
 
     // Do the thing (memmove to be compatible to native Buffer#copy)
     memmove(

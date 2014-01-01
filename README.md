@@ -33,6 +33,15 @@ Usage
 * `var memcpy = require("memcpy");`
 * `memcpy(target[, targetStart=0], source[, sourceStart=0[, sourceEnd=source.length])`
 
+API
+---
+```js
+var memcpy = require("memcpy"), // C++ binding if available, else native JS
+    memcpy_binding = memcpy.binding, // C++ binding or NULL if not available
+    memcpy_native = memcpy.native; // Native JS
+...
+```
+
 Please keep in mind that - besides the nice numbers - this is still to be considered experimental. I'd love if you'd
 review the C++ code to validate that it's safe. I can't yet think about a sane use case, though, as just sticking with
 Buffers on node.js and ArrayBuffers in the browser should be best practice.
