@@ -44,9 +44,9 @@ API
 
 | Argument     | Type                      | Optional  | Description
 |--------------|---------------------------|-----------|------------------------------------------------------------------
-| target       | Buffer &#124; ArrayBuffer |           | Target buffer to copy to
+| target       | Buffer &#124; ArrayBuffer &#124; Uint8Array | | Target buffer to copy to
 | targetStart  | number                    | omittable | Target offset to begin copying to, defaults to `0`
-| source       | Buffer &#124; ArrayBuffer |           | Source buffer to copy from
+| source       | Buffer &#124; ArrayBuffer &#124; Uint8Array | | Source buffer to copy from
 | sourceStart  | number                    | optional  | Source offset to begin copying from, defaults to `0`
 | sourceEnd    | number                    | optional  | Source offset to end copying from, defaults ot `source.length`
 | **@returns** | number                    |           | Number of bytes copied
