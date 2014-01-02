@@ -26,8 +26,8 @@ var memcpy = require("../src/memcpy.js");
 module.exports = {
     "interop": function(test) {
         [memcpy.binding, memcpy.native].forEach(function(memcpy) {
-            [Buffer, ArrayBuffer].forEach(function(Type1) {
-                [Buffer, ArrayBuffer].forEach(function(Type2) {
+            [Buffer, ArrayBuffer, Uint8Array].forEach(function(Type1) {
+                [Buffer, ArrayBuffer, Uint8Array].forEach(function(Type2) {
                     var b1 = new Type1(8),
                         b2 = new Type2(8);
                     test.log((memcpy === memcpy.binding ? "cc".cyan : "js".green)+" "+b1.constructor.name+" -> "+b2.constructor.name);
@@ -52,7 +52,7 @@ module.exports = {
 
     "overlap": function(test) {
         [memcpy.binding, memcpy.native].forEach(function(memcpy) {
-            [Buffer, ArrayBuffer].forEach(function(Type) {
+            [Buffer, ArrayBuffer, Uint8Array].forEach(function(Type) {
                 var b = new Type(8);
                 test.log((memcpy === memcpy.binding ? "cc".cyan : "js".green)+" "+b.constructor.name);
                 fill(b);
@@ -75,8 +75,8 @@ module.exports = {
 
     "100k": function(test) {
         [memcpy.binding, memcpy.native].forEach(function(memcpy) {
-            [Buffer, ArrayBuffer].forEach(function(Type1) {
-                [Buffer, ArrayBuffer].forEach(function(Type2) {
+            [Buffer, ArrayBuffer, Uint8Array].forEach(function(Type1) {
+                [Buffer, ArrayBuffer, Uint8Array].forEach(function(Type2) {
                     var b1 = new Type1(1024),
                         b2 = new Type2(1024);
                     fill(b1);

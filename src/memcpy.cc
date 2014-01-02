@@ -103,7 +103,7 @@ Handle<Value> memcpy(const Arguments& args) {
         return scope.Close(Undefined());
     }
 
-    // Do the thing (memmove to be compatible to native Buffer#copy)
+    // Do the thing (memmove to be compatible with native Buffer#copy)
     memmove(
         static_cast<unsigned char*>(target->GetIndexedPropertiesExternalArrayData()) + targetStart,
         static_cast<unsigned char*>(source->GetIndexedPropertiesExternalArrayData()) + sourceStart,
