@@ -13,94 +13,96 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+#include <string.h>
 #include <node.h>
+#include <nan.h>
 
 using namespace v8;
 
 // Copies data between kExternalUnsignedByteArrays like node Buffers and ArrayBuffers.
 // memcpy(target[, targetStart], source[, sourceStart[, sourceEnd]]):bytesCopied
-Handle<Value> memcpy(const Arguments& args) {
-    HandleScope scope;
+NAN_METHOD(memcpy){
+    NanScope();
 
     // Parse arguments
     if (args.Length() < 2) {
-        ThrowException(Exception::TypeError(String::New("Illegal number of arguments")));
-        return scope.Close(Undefined());
+        NanThrowTypeError("Illegal number of arguments");
+        NanReturnUndefined();
     }
     int i = 0;
     if (!args[i]->IsObject()) {
-        ThrowException(Exception::TypeError(String::New("Illegal target: Not an object")));
-        return scope.Close(Undefined());
+        NanThrowTypeError("Illegal target: Not an object");
+        NanReturnUndefined();
     }
     Local<Object> target = args[i++]->ToObject();
     if (target->GetIndexedPropertiesExternalArrayDataType() != kExternalUnsignedByteArray) {
-        ThrowException(Exception::TypeError(String::New("Illegal target: Not a valid kExternalUnsignedByteArray")));
-        return scope.Close(Undefined());
+        NanThrowTypeError("Illegal target: Not a valid kExternalUnsignedByteArray");
+        NanReturnUndefined();
     }
     int targetStart = 0;
     int targetLength = target->GetIndexedPropertiesExternalArrayDataLength();
     if (args[i]->IsUint32()) {
         targetStart = args[i++]->ToUint32()->Value();
         if (targetStart < 0 || targetStart > targetLength) {
-            ThrowException(Exception::TypeError(String::New("Illegal targetStart: Less than 0 or bigger than length")));
-            return scope.Close(Undefined());
+            NanThrowTypeError("Illegal targetStart: Less than 0 or bigger than length");
+            NanReturnUndefined();
         }
     }
     if (i >= args.Length()) {
-        ThrowException(Exception::TypeError(String::New("Illegal number of arguments")));
-        return scope.Close(Undefined());
+        NanThrowTypeError("Illegal number of arguments");
+        NanReturnUndefined();
     }
     if (!args[i]->IsObject()) {
-        ThrowException(Exception::TypeError(String::New("Illegal source: Not an object")));
-        return scope.Close(Undefined());
+        NanThrowTypeError("Illegal source: Not an object");
+        NanReturnUndefined();
     }
     Local<Object> source = args[i++]->ToObject();
     if (source->GetIndexedPropertiesExternalArrayDataType() != kExternalUnsignedByteArray) {
-        ThrowException(Exception::TypeError(String::New("Illegal source: Not a valid kExternalUnsignedByteArray")));
-        return scope.Close(Undefined());
+        NanThrowTypeError("Illegal source: Not a valid kExternalUnsignedByteArray");
+        NanReturnUndefined();
     }
     int sourceStart = 0;
     int sourceLength = source->GetIndexedPropertiesExternalArrayDataLength();
     int sourceEnd = sourceLength;
     if (i < args.Length()) {
         if (!args[i]->IsUint32()) {
-            ThrowException(Exception::TypeError(String::New("Illegal sourceStart: Not an uint32")));
-            return scope.Close(Undefined());
+            NanThrowTypeError("Illegal sourceStart: Not an uint32");
+            NanReturnUndefined();
         }
         sourceStart = args[i++]->ToUint32()->Value();
         if (sourceStart < 0 || sourceStart > sourceLength) {
-            ThrowException(Exception::TypeError(String::New("Illegal sourceStart: Less than 0 or bigger than length")));
-            return scope.Close(Undefined());
+            NanThrowTypeError("Illegal sourceStart: Less than 0 or bigger than length");
+            NanReturnUndefined();
         }
     }
     if (i < args.Length()) {
         if (!args[i]->IsUint32()) {
-            ThrowException(Exception::TypeError(String::New("Illegal sourceEnd: Not an uint32")));
-            return scope.Close(Undefined());
+            NanThrowTypeError("Illegal sourceEnd: Not an uint32");
+            NanReturnUndefined();
         }
         sourceEnd = args[i++]->ToUint32()->Value();
         if (sourceEnd < sourceStart || sourceEnd > sourceLength) {
-            ThrowException(Exception::TypeError(String::New("Illegal sourceEnd: Less than sourceStart or bigger than length")));
-            return scope.Close(Undefined());
+            NanThrowTypeError("Illegal sourceEnd: Less than sourceStart or bigger than length");
+            NanReturnUndefined();
         }
     }
     if (i /* still */ < args.Length()) {
-        ThrowException(Exception::TypeError(String::New("Illegal number of arguments")));
-        return scope.Close(Undefined());
+        NanThrowTypeError("Illegal number of arguments");
+        NanReturnUndefined();
     }
 
     // Perform sanity checks
     int len = sourceEnd - sourceStart;
     if (len == 0) {
-        return scope.Close(Undefined()); // Nothing to copy
+        NanReturnUndefined();
     }
     if (targetStart + len > targetLength) {
-        ThrowException(Exception::TypeError(String::New("Illegal source range: Target capacity overrun")));
-        return scope.Close(Undefined());
+        NanThrowTypeError("Illegal source range: Target capacity overrun");
+        NanReturnUndefined();
     }
     if (sizeof(unsigned char) != 1) {
-        ThrowException(Exception::TypeError(String::New("sizeof(unsigned char) != 1")));
-        return scope.Close(Undefined());
+        NanThrowTypeError("sizeof(unsigned char) != 1");
+        NanReturnUndefined();
     }
 
     // Do the thing (memmove to be compatible with native Buffer#copy)
@@ -110,11 +112,11 @@ Handle<Value> memcpy(const Arguments& args) {
         len
     );
 
-    return scope.Close(Number::New(len));
+    NanReturnValue(NanNew<Number>(len));
 }
 
 void init(Handle<Object> exports) {
-    exports->Set(String::NewSymbol("memcpy"), FunctionTemplate::New(memcpy)->GetFunction());
+    exports->Set(NanNew<String>("memcpy"), NanNew<FunctionTemplate>(memcpy)->GetFunction());
 }
 
 NODE_MODULE(memcpy, init);

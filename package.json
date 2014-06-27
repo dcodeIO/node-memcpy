@@ -1,31 +1,37 @@
 {
-    "name": "memcpy",
-    "version": "0.4.0",
-    "author": "Daniel Wirtz <dcode@dcode.io>",
-    "description": "Copies data between node Buffers and/or ArrayBuffers up to ~75 times faster than in pure JS.",
-    "main": "src/memcpy.js",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/dcodeIO/node-memcpy.git"
-    },
-    "bugs": {
-        "url": "https://github.com/dcodeIO/node-memcpy/issues"
-    },
-    "keywords": ["array", "buffer", "arraybuffer", "typed array"],
-    "dependencies": {
-        "bindings": "~1.1"
-    },
-    "devDependencies": {
-        "testjs": "latest"
-    },
-    "license": "Apache-2.0",
-    "engines": {
-        "node": ">=0.8"
-    },
-    "scripts": {
-        "prepublish": "npm test",
-        "test": "node node_modules/testjs/bin/testjs tests/suite.js",
-        "make": "node-gyp configure build && npm test",
-        "install": "node-gyp configure build"
-    }
+  "name": "memcpy",
+  "version": "0.4.0",
+  "author": "Daniel Wirtz <dcode@dcode.io>",
+  "description": "Copies data between node Buffers and/or ArrayBuffers up to ~75 times faster than in pure JS.",
+  "main": "src/memcpy.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dcodeIO/node-memcpy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dcodeIO/node-memcpy/issues"
+  },
+  "keywords": [
+    "array",
+    "buffer",
+    "arraybuffer",
+    "typed array"
+  ],
+  "dependencies": {
+    "bindings": "~1.1",
+    "nan": "~1.2.0"
+  },
+  "devDependencies": {
+    "testjs": "latest"
+  },
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=0.8"
+  },
+  "scripts": {
+    "prepublish": "npm test",
+    "test": "node node_modules/testjs/bin/testjs tests/suite.js",
+    "make": "node-gyp configure build && npm test",
+    "install": "node-gyp configure build"
+  }
 }
