@@ -68,4 +68,8 @@ Please keep in mind that - besides the nice numbers - this is still to be consid
 review the C++ code to validate that it's safe. I can't yet think of a sane use case, though, as just sticking with
 Buffers on node.js and ArrayBuffers in the browser should be best practice.
 
+Contributors
+------------
+[Denys Khanzhiyev](https://github.com/xdenser) (node 0.11.13+ support with nan)
+
 **License:** [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
