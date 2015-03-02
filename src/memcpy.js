@@ -24,7 +24,7 @@
 
     var path = require("path"),
         binding = null,
-        Buffer = require('buffer');
+        Buffer = require('buffer').Buffer;
     try { binding = require('bindings')('memcpy.node'); } catch (e) {}
 
     /**
