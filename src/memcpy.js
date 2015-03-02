@@ -23,7 +23,8 @@
     "use strict";
 
     var path = require("path"),
-        binding = null;
+        binding = null,
+        Buffer = require('buffer');
     try { binding = require('bindings')('memcpy.node'); } catch (e) {}
 
     /**
