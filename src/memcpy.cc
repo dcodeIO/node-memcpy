@@ -16,6 +16,8 @@
 #include <string.h>
 #include <node.h>
 #include <nan.h>
+#include <ArrayBuffer.h>
+#include "memcpy.h"
 
 using namespace v8;
 
@@ -23,96 +25,136 @@ using namespace v8;
 // memcpy(target[, targetStart], source[, sourceStart[, sourceEnd]]):bytesCopied
 NAN_METHOD(memcpy){
     NanScope();
+    if (sizeof(unsigned char) != 1) {
+        NanThrowError("sizeof(unsigned char) != 1");
+        NanReturnUndefined();
+    }
 
-    // Parse arguments
+    unsigned char* targetData;
+    size_t targetStart = 0,
+           targetLength;
+
+    unsigned char* sourceData;
+    size_t sourceStart = 0,
+           sourceLength,
+           sourceEnd;
+
+    // Requires at least two arguments: target and source
     if (args.Length() < 2) {
-        NanThrowTypeError("Illegal number of arguments");
+        NanThrowTypeError("illegal number of arguments");
         NanReturnUndefined();
     }
     int i = 0;
+
+    // Target must be an object
     if (!args[i]->IsObject()) {
-        NanThrowTypeError("Illegal target: Not an object");
+        NanThrowTypeError("illegal target: not an object");
         NanReturnUndefined();
     }
-    Local<Object> target = args[i++]->ToObject();
-    if (target->GetIndexedPropertiesExternalArrayDataType() != kExternalUnsignedByteArray) {
-        NanThrowTypeError("Illegal target: Not a valid kExternalUnsignedByteArray");
+    Local<Object> target = args[i]->ToObject();
+
+    // Target must reference an unsigned byte array (or be an ArrayBuffer)
+    if (target->GetIndexedPropertiesExternalArrayDataType() == kExternalUnsignedByteArray) {
+        targetData = static_cast<unsigned char*>(target->GetIndexedPropertiesExternalArrayData());
+        targetLength = target->GetIndexedPropertiesExternalArrayDataLength();
+    } else {
+#if NODE_MAJOR_VERSION > 0 || NODE_MINOR_VERSION >= 12
+        if (!args[i]->IsArrayBuffer()) {
+            NanThrowTypeError("illegal target: not an ArrayBuffer");
+            NanReturnUndefined();
+        }
+        node::ArrayBuffer* ab = node::ArrayBuffer::New(args[i]);
+        targetData = static_cast<unsigned char*>(ab->Data());
+        targetLength = ab->ByteLength();
+#else
+        NanThrowTypeError("illegal target: not a kExternalUnsignedByteArray");
         NanReturnUndefined();
+#endif
     }
-    int targetStart = 0;
-    int targetLength = target->GetIndexedPropertiesExternalArrayDataLength();
-    if (args[i]->IsUint32()) {
+    // If specified, targetStart must be an unsigned integer in [0,targetLength]
+    if (args[++i]->IsUint32()) {
         targetStart = args[i++]->ToUint32()->Value();
         if (targetStart < 0 || targetStart > targetLength) {
-            NanThrowTypeError("Illegal targetStart: Less than 0 or bigger than length");
+            NanThrowRangeError("illegal targetStart: out of bounds");
             NanReturnUndefined();
         }
     }
+    // Requires at least one additional argument: source
     if (i >= args.Length()) {
-        NanThrowTypeError("Illegal number of arguments");
+        NanThrowTypeError("illegal number of arguments");
         NanReturnUndefined();
     }
+    // Source must be an object
     if (!args[i]->IsObject()) {
-        NanThrowTypeError("Illegal source: Not an object");
+        NanThrowTypeError("illegal source: not an object");
         NanReturnUndefined();
     }
-    Local<Object> source = args[i++]->ToObject();
-    if (source->GetIndexedPropertiesExternalArrayDataType() != kExternalUnsignedByteArray) {
-        NanThrowTypeError("Illegal source: Not a valid kExternalUnsignedByteArray");
+    Local<Object> source = args[i]->ToObject();
+
+    // Source must reference an unsigned byte array (or be an ArrayBuffer)
+    if (source->GetIndexedPropertiesExternalArrayDataType() == kExternalUnsignedByteArray) {
+        sourceData = static_cast<unsigned char*>(source->GetIndexedPropertiesExternalArrayData());
+        sourceEnd = sourceLength = source->GetIndexedPropertiesExternalArrayDataLength();
+    } else {
+#if NODE_MAJOR_VERSION > 0 || NODE_MINOR_VERSION >= 12
+        if (!args[i]->IsArrayBuffer()) {
+            NanThrowTypeError("illegal source: not an ArrayBuffer");
+            NanReturnUndefined();
+        }
+        node::ArrayBuffer* ab = node::ArrayBuffer::New(args[i]);
+        sourceData = static_cast<unsigned char*>(ab->Data());
+        sourceEnd = sourceLength = ab->ByteLength();
+#else
+        NanThrowTypeError("illegal target: not a kExternalUnsignedByteArray");
         NanReturnUndefined();
+#endif
     }
-    int sourceStart = 0;
-    int sourceLength = source->GetIndexedPropertiesExternalArrayDataLength();
-    int sourceEnd = sourceLength;
-    if (i < args.Length()) {
+    // If specified, sourceStart must be an unsigned integer in [0,sourceLength]
+    if (++i < args.Length()) {
         if (!args[i]->IsUint32()) {
-            NanThrowTypeError("Illegal sourceStart: Not an uint32");
+            NanThrowTypeError("illegal sourceStart: not an uint32");
             NanReturnUndefined();
         }
         sourceStart = args[i++]->ToUint32()->Value();
         if (sourceStart < 0 || sourceStart > sourceLength) {
-            NanThrowTypeError("Illegal sourceStart: Less than 0 or bigger than length");
+            NanThrowTypeError("illegal sourceStart: out of bounds");
             NanReturnUndefined();
         }
     }
+    // If specified, sourceEnd must be an unsigned integer in [sourceStart,sourceLength]
     if (i < args.Length()) {
         if (!args[i]->IsUint32()) {
-            NanThrowTypeError("Illegal sourceEnd: Not an uint32");
+            NanThrowTypeError("illegal sourceEnd: not an uint32");
             NanReturnUndefined();
         }
         sourceEnd = args[i++]->ToUint32()->Value();
         if (sourceEnd < sourceStart || sourceEnd > sourceLength) {
-            NanThrowTypeError("Illegal sourceEnd: Less than sourceStart or bigger than length");
+            NanThrowTypeError("illegal sourceEnd: out of bounds");
             NanReturnUndefined();
         }
     }
-    if (i /* still */ < args.Length()) {
-        NanThrowTypeError("Illegal number of arguments");
+    // Additional arguments are invalid
+    if (i < args.Length()) {
+        NanThrowTypeError("illegal number of arguments");
         NanReturnUndefined();
     }
-
+    // Determine number of bytes to copy
+    int length = sourceEnd - sourceStart;
+    if (length == 0) {
+        NanReturnValue(NanNew<Number>(length));
+    }
     // Perform sanity checks
-    int len = sourceEnd - sourceStart;
-    if (len == 0) {
+    if (targetStart + length > targetLength) {
+        NanThrowTypeError("illegal source range: target capacity overrun");
         NanReturnUndefined();
     }
-    if (targetStart + len > targetLength) {
-        NanThrowTypeError("Illegal source range: Target capacity overrun");
-        NanReturnUndefined();
-    }
-    if (sizeof(unsigned char) != 1) {
-        NanThrowTypeError("sizeof(unsigned char) != 1");
-        NanReturnUndefined();
-    }
-
     // Do the thing (memmove to be compatible with native Buffer#copy)
     memmove(
-        static_cast<unsigned char*>(target->GetIndexedPropertiesExternalArrayData()) + targetStart,
-        static_cast<unsigned char*>(source->GetIndexedPropertiesExternalArrayData()) + sourceStart,
-        len
+        targetData + targetStart,
+        sourceData + sourceStart,
+        length
     );
-
-    NanReturnValue(NanNew<Number>(len));
+    NanReturnValue(NanNew<Number>(length));
 }
 
 void init(Handle<Object> exports) {

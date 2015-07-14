@@ -19,51 +19,22 @@
  * Released under the Apache License, Version 2.0
  * see: https://github.com/dcodeIO/memcpy for details
  */ //
-(function(module) {
+(function (module) {
     "use strict";
 
     var path = require("path"),
+        Buffer = require('buffer').Buffer,
         binding = null;
     try { binding = require('bindings')('memcpy.node'); } catch (e) {}
-
-    /**
-     * @type {number}
-     * @inner
-     */
-    var i = 0;
-
-    /**
-     * @type {number}
-     * @inner
-     */
-    var j = 0;
-
-    /**
-     * @type {?Uint8Array}
-     * @inner
-     */
-    var k = null;
-
-    /**
-     * @type {?Uint8Array}
-     * @inner
-     */
-    var l = null;
-
-    /**
-     * @type {number}
-     * @inner
-     */
-    var len = 0;
 
     /**
      * Copies data between Buffers and/or ArrayBuffers in a uniform way.
      * @exports memcpy
      * @function
      * @name memcpy
-     * @param {!(Buffer|ArrayBuffer|Uint8Array)} target Destination
+     * @param {!(Buffer|ArrayBuffer)} target Destination
      * @param {number|!(Buffer|ArrayBuffer)} targetStart Destination start, defaults to 0.
-     * @param {(!(Buffer|ArrayBuffer|Uint8Array)|number)=} source Source
+     * @param {(!(Buffer|ArrayBuffer)|number)=} source Source
      * @param {number=} sourceStart Source start, defaults to 0.
      * @param {number=} sourceEnd Source end, defaults to capacity.
      * @returns {number} Number of bytes copied
@@ -77,60 +48,57 @@
             targetStart = 0;
         }
         sourceStart = sourceStart || 0;
+
+        var i, j, k, l;
+
         if (target instanceof Buffer) {
 
             // Buffer source -> Buffer target (the binding is a tiny bit faster)
             if (source instanceof Buffer) {
                 sourceEnd = sourceEnd || source.length;
-                len = sourceEnd - sourceStart;
-                if (targetStart+len > target.length) {
-                    throw(new Error("Buffer overrun"));
-                }
+                l = sourceEnd - sourceStart;
+                if (targetStart + l > target.length)
+                    throw Error("illegal source range: target capacity overrun");
                 source.copy(target, targetStart, sourceStart, sourceEnd);
 
-            // ArrayBuffer|Uint8Array source -> Buffer target (the binding is about 45 times faster)
-            } else {
+                // ArrayBuffer source -> Buffer target (the binding is about 45 times faster)
+            } else if (source instanceof ArrayBuffer) {
                 sourceEnd = sourceEnd || source.byteLength;
-                len = sourceEnd - sourceStart;
-                if (targetStart+len > target.length) {
-                    throw(new Error("Buffer overrun"));
-                }
-                for (i=sourceStart, j=targetStart,
-                     k=source instanceof Uint8Array ? source : new Uint8Array(source);
-                    i<sourceEnd; ++i, ++j) target[j] = k[i];
-                k = null;
-            }
+                l = sourceEnd - sourceStart;
+                if (targetStart + l > target.length)
+                    throw Error("Buffer overrun");
+                for (i = sourceStart, j = targetStart, k = new Uint8Array(source); i < sourceEnd; ++i, ++j)
+                    target[j] = k[i];
+            } else
+                throw Error("illegal source: not an ArrayBuffer or Buffer");
 
-        } else {
+        } else if (target instanceof ArrayBuffer) {
 
-            // Buffer source -> ArrayBuffer|Uint8Array target (the binding is about 45 times faster)
+            // Buffer source -> ArrayBuffer target (the binding is about 45 times faster)
             if (source instanceof Buffer) {
                 sourceEnd = sourceEnd || source.length;
-                len = sourceEnd - sourceStart;
-                if (targetStart+len > target.byteLength) {
-                    throw(new Error("Buffer overrun"));
-                }
-                for (i=sourceStart, j=targetStart,
-                     k=target instanceof Uint8Array ? target : new Uint8Array(target);
-                    i<sourceEnd; ++i, ++j) k[j] = source[i];
-                k = null;
+                l = sourceEnd - sourceStart;
+                if (targetStart + l > target.byteLength)
+                    throw Error("buffer overrun");
+                for (i = sourceStart, j = targetStart, k = new Uint8Array(target); i < sourceEnd; ++i, ++j)
+                    k[j] = source[i];
 
-            // ArrayBuffer|Uint8Array source -> ArrayBuffer|Uint8Array target (the binding is up to about 75 times faster)
-            } else {
+                // ArrayBuffer source -> ArrayBuffer target (the binding is up to about 75 times faster)
+            } else if (source instanceof ArrayBuffer) {
                 sourceEnd = sourceEnd || source.byteLength;
-                len = sourceEnd-sourceStart;
-                if (targetStart+len > target.byteLength) {
-                    throw(new Error("Buffer overrun"));
-                }
-                for (i=sourceStart, j=targetStart,
-                     k=target instanceof Uint8Array ? target : new Uint8Array(target),
-                     l=source instanceof Uint8Array ? source : new Uint8Array(source);
-                    i<sourceEnd; ++i, ++j) k[j] = l[i];
-                k = l = null;
-            }
+                l = sourceEnd - sourceStart;
+                if (targetStart + l > target.byteLength)
+                    throw Error("buffer overrun");
+                for (i = sourceStart, j = targetStart, k = new Uint8Array(target), l = new Uint8Array(source); i < sourceEnd; ++i, ++j)
+                    k[j] = l[i];
+                l = sourceEnd - sourceStart;
+            } else
+                throw Error("illegal source: not an ArrayBuffer or Buffer");
 
-        }
-        return len;
+        } else
+            throw Error("illegal target: not an ArrayBuffer or Buffer");
+
+        return l;
     }
 
     if (binding) {

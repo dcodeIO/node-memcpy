@@ -13,29 +13,17 @@ types can be ridiculously slow. This is where a node module like memcpy comes in
 
  i memcpy.100k > cc Buffer -> Buffer: 22.756ms
  i memcpy.100k > cc Buffer -> ArrayBuffer: 23.861ms
- i memcpy.100k > cc Buffer -> Uint8Array: 22.953ms
 
  i memcpy.100k > cc ArrayBuffer -> Buffer: 22.955ms
  i memcpy.100k > cc ArrayBuffer -> ArrayBuffer: 23.273ms
- i memcpy.100k > cc ArrayBuffer -> Uint8Array: 22.685ms
-
- i memcpy.100k > cc Uint8Array -> Buffer: 23.472ms
- i memcpy.100k > cc Uint8Array -> ArrayBuffer: 22.975ms
- i memcpy.100k > cc Uint8Array -> Uint8Array: 22.953ms
 
 // Native JS
 
  i memcpy.100k > js Buffer -> Buffer: 21.617ms
  i memcpy.100k > js Buffer -> ArrayBuffer: 993.361ms
- i memcpy.100k > js Buffer -> Uint8Array: 410.010ms
 
  i memcpy.100k > js ArrayBuffer -> Buffer: 940.273ms
  i memcpy.100k > js ArrayBuffer -> ArrayBuffer: 1626.182ms
- i memcpy.100k > js ArrayBuffer -> Uint8Array: 1084.790ms
-
- i memcpy.100k > js Uint8Array -> Buffer: 386.218ms
- i memcpy.100k > js Uint8Array -> ArrayBuffer: 1107.530ms
- i memcpy.100k > js Uint8Array -> Uint8Array: 502.653ms
 ```
 
 API
@@ -44,9 +32,9 @@ API
 
 | Argument     | Type                      | Optional  | Description
 |--------------|---------------------------|-----------|------------------------------------------------------------------
-| target       | Buffer &#124; ArrayBuffer &#124; Uint8Array | | Target buffer to copy to
+| target       | Buffer &#124; ArrayBuffer |           | Target buffer to copy to
 | targetStart  | number                    | omittable | Target offset to begin copying to, defaults to `0`
-| source       | Buffer &#124; ArrayBuffer &#124; Uint8Array | | Source buffer to copy from
+| source       | Buffer &#124; ArrayBuffer |           | Source buffer to copy from
 | sourceStart  | number                    | optional  | Source offset to begin copying from, defaults to `0`
 | sourceEnd    | number                    | optional  | Source offset to end copying from, defaults ot `source.length`
 | **@returns** | number                    |           | Number of bytes copied
